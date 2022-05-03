@@ -10,11 +10,12 @@ const userSchema = new Schema(
             required: true,
             trim: true,
         },
+        // update regex 
         email: {
             type: String,
             required: true,
             unique: true,
-            match: /.+\@.+\..+/
+            match: /.+\@.+\..+/,
         },
         // Array of _id values referencing the Thought model
         thoughts: [
@@ -27,12 +28,13 @@ const userSchema = new Schema(
         friends: [
             {
                 type: Schema.Types.ObjectId,
-                ref: 'User',
+                ref: 'User.friend',
             }
         ],
         toJSON: {
             virtuals: true,
         },
+        id: false,
     }
 );
 
@@ -40,12 +42,12 @@ const userSchema = new Schema(
 userSchema
     .virtual('friendCount')
     .get(function () {
-        return `${this.arr.length}`
+        return `${this.friends.length}`
     })
 
     .set(function () {
-        const arr = [{ friends }]
-        this.set({ arr });
+        const friends = [{ friends }]
+        this.set({ friends });
     });
 
 

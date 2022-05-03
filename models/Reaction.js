@@ -28,4 +28,5 @@ const reactionSchema = new Schema(
     }
 );
 
+// getter / setter to format date 
 module.exports = reactionSchema;
