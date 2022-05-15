@@ -11,22 +11,29 @@ module.exports = {
     getSingleThought(req, res) {
         Thought.findOne({ _id: req.params.thoughtId })
             .select('-__v')
-            .then((thought) =>
+            .then(async (thought) =>
                 !thought
                     ? res.status(404).json({ message: 'No thought with that ID' })
-                    : res.json(thought)
+                    : res.json({
+                        thought,
+                    })
             )
-            .catch((err) => res.status(500).json(err));
-    },
-
-    // Think a thought 
-    createThought(req, res) {
-        Thought.create(req.body)
-            .then((tought) => res.json(thought))
             .catch((err) => {
                 console.log(err);
                 return res.status(500).json(err);
             });
+    },
+
+    // Think a thought 
+    createThought(req, res) {
+        const newThought = new Thought(req.body);
+        newThought.save();
+        if (newThought) {
+            res.status(200).json(newThought);
+        } else {
+            console.log('Whoops, something went wrong');
+            res.status(500).json({ message: 'Whoops, something went wrong' });
+        }
     },
 
     // Delete a thought
@@ -36,7 +43,7 @@ module.exports = {
             .then((thought) =>
                 !thought
                     ? res.status(404).json({ message: 'No thought with that ID' })
-                    : user.delete({ _id: { $in: thought.user } })
+                    : User.deleteOne({ _id: { $in: thought.user } })
             )
             .then(() => res.json({ message: 'Thought deleted!' }))
             .catch((err) => res.status(500).json(err));
@@ -93,3 +100,5 @@ module.exports = {
     }
 
 };
+
+// module.exports = thoughtController;

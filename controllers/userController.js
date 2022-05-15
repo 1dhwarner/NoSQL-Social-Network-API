@@ -39,12 +39,6 @@ module.exports = {
             });
     },
 
-    // create a new user
-    // createUser(req, res) {
-    //     User.create(req.body)
-    //         .then((user) => res.json(user))
-    //         .catch((err) => res.status(500).json(err));
-    // },
     createUser(req, res) {
         const newUser = new User(req.body);
         newUser.save();
@@ -56,13 +50,30 @@ module.exports = {
         }
     },
 
+    updateUser(req, res) {
+        User.findOneAndUpdate(
+            // Finds first document with _id
+            { _id: req.params.userId },
+            { email: req.body.email },
+            { new: true },
+        )
+            .then((user) =>
+                !user
+                    ? res.status(404).json({
+                        message: 'No such user exists',
+                    })
+                    : res.json(user)
+            )
+            .catch((err) => res.status(500).json(err));
+    },
+
     deleteUser(req, res) {
         User.findOneAndRemove({ _id: req.params.userId })
             .then((user) =>
                 !user
                     ? res.status(404).json({ message: 'No such user exists' })
                     // what's the syntax for 'if not a user, return the message above'??
-                    : res.json({ message: 'Student successfully deleted' })
+                    : res.json({ message: 'User successfully deleted' })
             )
             .catch((err) => {
                 console.log(err);
@@ -70,4 +81,36 @@ module.exports = {
             });
     },
     // need to add / remove friend 
+
+    addFriend(req, res) {
+        User.findOneAndUpdate({ _id: req.params.userId },
+            { $pull: { friends: req.params.friendId } },
+            { runValidators: true, new: true }
+        )
+            .then((user) =>
+                !user
+                    ? res.status(404).json({
+                        message: "Invalid user. Try again.",
+                    })
+                    : res.json(user)
+            )
+            .catch((err) => res.status(500).json(err));
+    },
+
+    deleteFriend(req, res) {
+        User.findOneAndDelete({ _id: req.params.userId },
+            { $pull: { friends: req.params.friendId } },
+            { runValidators: true, new: true }
+        )
+            .then((user) =>
+                !user
+                    ? res.status(404).json({
+                        message: "Invalid user. Try again.",
+                    })
+                    : res.json(user)
+            )
+            .catch((err) => res.status(500).json(err));
+    }
 };
+
+// module.exports = userRoutes;
