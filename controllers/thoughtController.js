@@ -31,8 +31,7 @@ module.exports = {
         if (newThought) {
             res.status(200).json(newThought);
         } else {
-            console.log('Whoops, something went wrong');
-            res.status(500).json({ message: 'Whoops, something went wrong' });
+            res.status(500).json({ message: 'Something went wrong' });
         }
     },
 
