@@ -45,14 +45,12 @@ module.exports = {
         if (newUser) {
             res.status(200).json(newUser);
         } else {
-            console.log('Whoops, something went wrong');
-            res.status(500).json({ message: 'Whoops, something went wrong' });
+            res.status(500).json({ message: 'Something went wrong' });
         }
     },
 
     updateUser(req, res) {
         User.findOneAndUpdate(
-            // Finds first document with _id
             { _id: req.params.userId },
             { email: req.body.email },
             { new: true },
@@ -72,7 +70,6 @@ module.exports = {
             .then((user) =>
                 !user
                     ? res.status(404).json({ message: 'No such user exists' })
-                    // what's the syntax for 'if not a user, return the message above'??
                     : res.json({ message: 'User successfully deleted' })
             )
             .catch((err) => {
@@ -80,7 +77,6 @@ module.exports = {
                 res.status(500).json(err);
             });
     },
-    // need to add / remove friend 
 
     addFriend(req, res) {
         User.findOneAndUpdate({ _id: req.params.userId },
